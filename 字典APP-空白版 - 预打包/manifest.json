@@ -1,0 +1,17 @@
+{
+  "name": "字典APP",
+  "short_name": "字典",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#4a90d9",
+  "description": "一款英语字典学习应用",
+  "icons": [
+    {
+      "src": "data/icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

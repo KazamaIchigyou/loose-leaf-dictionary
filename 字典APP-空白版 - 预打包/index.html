@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#2c3e50">
+    <link rel="manifest" href="manifest.json">
+    <title>电子活页字典</title>
+    <link rel="stylesheet" href="styles/main.css?v=1.40.0">
+</head>
+<body>
+<div id="app">
+    <header class="app-header">
+        <span id="app-title">电子活页字典</span>
+        <span class="stats" id="app-stats"></span>
+    </header>
+
+    <main class="app-content" id="app-content">
+        <!-- 录入页 -->
+        <section class="page active" id="page-edit">
+            <div class="edit-fixed-wrap">
+                <div class="search-bar">
+                    <input type="search" id="edit-search" placeholder="搜索已有内容...">
+                </div>
+                <div class="search-scope" id="edit-search-scope">
+                    <button class="scope-btn" data-scope="all">全部</button>
+                    <button class="scope-btn active" data-scope="text">仅正文</button>
+                    <button class="scope-btn" data-scope="desc">仅释义</button>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">批量指令输入</label>
+                    <textarea id="command-input" placeholder="支持格式：
+C@字@描述#
+P@字_字@描述#
+W@字/字_字@描述#
+S@W1+W2+.@描述#
+WN@字/字@描述#
+
+每行一条指令，或用 # 分隔多条"></textarea>
+                </div>
+                <div class="toolbar">
+                    <button class="btn btn-secondary tpl-btn" data-tpl="C">C模板</button>
+                    <button class="btn btn-secondary tpl-btn" data-tpl="P">P模板</button>
+                    <button class="btn btn-secondary tpl-btn" data-tpl="W">W模板</button>
+                    <button class="btn btn-secondary tpl-btn" data-tpl="S">S模板</button>
+                    <button class="btn btn-secondary tpl-btn" data-tpl="WN">WN模板</button>
+                </div>
+                <div class="toolbar" style="gap:6px;margin-bottom:16px">
+                    <span style="font-size:12px;color:#888;align-self:center;padding-right:6px">分隔符:</span>
+                    <button class="btn btn-secondary tpl-btn" data-tpl="SEP_UNDER" data-sep="1" style="font-family:'Courier New',monospace;font-weight:700;padding:8px 14px">_</button>
+                    <button class="btn btn-secondary tpl-btn" data-tpl="SEP_SLASH" data-sep="1" style="font-family:'Courier New',monospace;font-weight:700;padding:8px 14px">/</button>
+                    <button class="btn btn-secondary tpl-btn" data-tpl="SEP_PLUS" data-sep="1" style="font-family:'Courier New',monospace;font-weight:700;padding:8px 14px">+</button>
+                </div>
+                <button class="btn btn-primary btn-lg" id="btn-execute">执行指令</button>
+            </div>
+            <div class="edit-scroll-wrap">
+                <div id="command-results"></div>
+            </div>
+        </section>
+
+        <!-- 浏览页 -->
+        <section class="page" id="page-browse">
+            <div class="browse-fixed-wrap">
+                <div class="search-bar">
+                    <input type="search" id="browse-search" placeholder="搜索正文内容...">
+                </div>
+                <div class="tab-bar" id="browse-tab-bar">
+                    <button class="tab active" data-type="c">C单元</button>
+                    <button class="tab" data-type="p">P复合字根</button>
+                    <button class="tab" data-type="w">W单词</button>
+                    <button class="tab" data-type="s">S句子</button>
+                </div>
+            </div>
+            <div class="browse-scroll-wrap">
+                <div id="browse-list"></div>
+            </div>
+        </section>
+
+        <!-- 详情页（活页） -->
+        <section class="page" id="page-detail">
+            <button class="back-btn" id="btn-back">&larr; 返回</button>
+            <div id="detail-content"></div>
+        </section>
+
+        <!-- 文章页 -->
+        <section class="page" id="page-article">
+            <div class="form-group">
+                <label class="form-label">文章输入（支持 C/P 文本，无需 W 存在，# 强制换行）</label>
+                <textarea id="article-input" placeholder="例如：ier_er+we+#+er_e+."></textarea>
+            </div>
+            <div class="toolbar">
+                <button class="btn btn-secondary tpl-btn" id="btn-pick-cunit">选C单元</button>
+                <button class="btn btn-secondary tpl-btn" id="btn-pick-punit">选P复合</button>
+                <button class="btn btn-secondary tpl-btn" id="btn-pick-word">选单词</button>
+                <button class="btn btn-secondary tpl-btn" id="btn-pick-punct">插入标点</button>
+                <button class="btn btn-secondary tpl-btn" id="btn-pick-break">强制换行</button>
+            </div>
+            <div class="section-title">实时预览</div>
+            <div class="article-preview" id="article-preview">输入内容后在此预览文章拼接效果...</div>
+            <button class="btn btn-primary btn-lg" id="btn-generate-article">生成拼接图</button>
+            <div class="section-title">生成结果</div>
+            <div id="article-output" style="min-height:60px;"></div>
+        </section>
+
+        <!-- 设置页 -->
+        <section class="page" id="page-setting">
+            <div class="setting-card">
+                <div class="section-title">数据统计</div>
+                <div class="stats-grid" id="setting-stats">
+                    <div class="stat-box"><div class="stat-num" id="st-c">0</div><div class="stat-label">C单元</div></div>
+                    <div class="stat-box"><div class="stat-num" id="st-p">0</div><div class="stat-label">P复合</div></div>
+                    <div class="stat-box"><div class="stat-num" id="st-w">0</div><div class="stat-label">W单词</div></div>
+                    <div class="stat-box"><div class="stat-num" id="st-s">0</div><div class="stat-label">S句子</div></div>
+                </div>
+            </div>
+            <div class="setting-card">
+                <div class="section-title">数据管理</div>
+                <div class="setting-desc">导出全部数据为 ZIP 备份文件，或从 ZIP 文件恢复数据（导入会叠加已有数据，不会覆盖）</div>
+                <div class="toolbar">
+                    <button class="btn btn-secondary" id="btn-export">导出备份</button>
+                    <button class="btn btn-secondary" id="btn-import">导入恢复</button>
+                    <input type="file" id="import-file" accept=".zip" style="display:none">
+                </div>
+            </div>
+            <div class="setting-card">
+                <div class="section-title">版本更新</div>
+                <div class="setting-desc" id="update-status">正在读取本地版本...</div>
+                <div class="toolbar">
+                    <button class="btn btn-primary" id="btn-check-update">检查更新</button>
+                </div>
+            </div>
+            <div class="setting-card">
+                <div class="section-title">关于</div>
+                <div class="setting-desc">字典 APP · 本地版<br>所有数据只存储在本机浏览器 IndexedDB，不会上传任何服务器</div>
+            </div>
+        </section>
+    </main>
+
+    <nav class="app-tabs" id="app-tabs">
+        <button class="app-tab active" data-page="edit">
+            <span class="tab-icon">&#9998;</span>
+            <span>录入</span>
+        </button>
+        <button class="app-tab" data-page="browse">
+            <span class="tab-icon">&#128269;</span>
+            <span>浏览</span>
+        </button>
+        <button class="app-tab" data-page="article">
+            <span class="tab-icon">&#128221;</span>
+            <span>文章</span>
+        </button>
+        <button class="app-tab" data-page="setting">
+            <span class="tab-icon">&#9881;</span>
+            <span>设置</span>
+        </button>
+    </nav>
+</div>
+
+<script src="data-embed.js?v=1.40.0"></script>
+<script src="core/dict-store-browser.js?v=1.40.0"></script>
+<script src="core/command-parser.js?v=1.40.0"></script>
+<script src="core/validators.js?v=1.40.0"></script>
+<script src="core/operations.js?v=1.40.0"></script>
+<script src="core/queries.js?v=1.40.0"></script>
+<script src="core/updates.js?v=1.40.0"></script>
+<script src="core/export-import.js?v=1.40.0"></script>
+<script src="core/image-composer.js?v=1.40.0"></script>
+<script src="ui/edit-page.js?v=1.40.0"></script>
+<script src="ui/browse-page.js?v=1.40.0"></script>
+<script src="ui/drawing-board.js?v=1.40.0"></script>
+<script src="ui/looseleaf.js?v=1.40.0"></script>
+<script src="ui/article-page.js?v=1.40.0"></script>
+<script src="main.js?v=1.40.0"></script>
+<script>
+(function() {
+    var CUR_V = '1.40.0';
+    var KEY = 'dict_app_installed_version';
+    try {
+        var installed = localStorage.getItem(KEY);
+        if (!installed) localStorage.setItem(KEY, CUR_V);
+    } catch(e) {}
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('service-worker.js?v=' + CUR_V).catch(function() {});
+        navigator.serviceWorker.addEventListener('controllerchange', function() {
+            try { localStorage.setItem('dict_app_installed_version', CUR_V); } catch(e) {}
+            window.location.reload();
+        });
+        var refreshSw = navigator.serviceWorker;
+        if (refreshSw && refreshSw.ready) {
+            refreshSw.ready.then(function(reg) {
+                if (reg.waiting) reg.waiting.postMessage({ type: 'PING' });
+                try { localStorage.setItem('dict_app_installed_version', CUR_V); } catch(e) {}
+            }).catch(function(){});
+        }
+    }
+    window.DICT_APP_CURRENT_VERSION = CUR_V;
+})();
+</script>
+</body>
+</html>
