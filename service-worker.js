@@ -1,4 +1,4 @@
-var APP_VERSION = '1.41.0';
+var APP_VERSION = '1.42.0';
 var CACHE_NAME = 'dict-app-v' + APP_VERSION;
 var V = '?v=' + APP_VERSION;
 var urlsToCache = [

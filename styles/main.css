@@ -184,8 +184,24 @@ textarea { resize: vertical; min-height: 120px; font-family: "SF Mono", Consolas
 /* ========== 图片画廊 ========== */
 #page-gallery { display: none; flex-direction: column; padding: 0; width: 100%; min-width: 0; overflow: hidden; height: 100%; }
 #page-gallery.active { display: flex; overflow: hidden; width: 100%; min-width: 0; }
-#page-gallery .gallery-scroll-wrap { flex: 1 1 auto; overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling: touch; padding: 16px; min-width: 0; }
-#page-gallery .gallery-scroll-wrap::-webkit-scrollbar { display: none; }
+#page-gallery .gallery-scroll-wrap { flex: 1 1 auto; overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling: touch; padding: 16px; min-width: 0; scrollbar-width: thin; scrollbar-color: rgba(0,0,0,0.25) transparent; }
+#page-gallery .gallery-scroll-wrap::-webkit-scrollbar { width: 6px; }
+#page-gallery .gallery-scroll-wrap::-webkit-scrollbar-track { background: transparent; }
+#page-gallery .gallery-scroll-wrap::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.2); border-radius: 3px; }
+#page-gallery .gallery-scroll-wrap::-webkit-scrollbar-thumb:hover { background: rgba(0,0,0,0.4); }
+
+/* ========== 文本列表页 ========== */
+#page-textlist { display: none; flex-direction: column; padding: 0; width: 100%; min-width: 0; overflow: hidden; height: 100%; }
+#page-textlist.active { display: flex; overflow: hidden; width: 100%; min-width: 0; }
+#page-textlist .textlist-scroll-wrap { flex: 1 1 auto; overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling: touch; padding: 16px; min-width: 0; scrollbar-width: thin; scrollbar-color: rgba(0,0,0,0.25) transparent; }
+#page-textlist .textlist-scroll-wrap::-webkit-scrollbar { width: 6px; }
+#page-textlist .textlist-scroll-wrap::-webkit-scrollbar-track { background: transparent; }
+#page-textlist .textlist-scroll-wrap::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.2); border-radius: 3px; }
+#page-textlist .textlist-scroll-wrap::-webkit-scrollbar-thumb:hover { background: rgba(0,0,0,0.4); }
+.textlist-list { margin-top: 8px; display: grid; grid-template-columns: repeat(2, 1fr); gap: 0; }
+.textlist-item { padding: 10px 12px; border-bottom: 1px solid #f0f0f0; font-size: 15px; color: #333; cursor: pointer; transition: background 0.15s; word-break: break-word; overflow-wrap: break-word; }
+.textlist-item:hover { background: #f5f7fa; }
+.textlist-item:active { background: #e8edf2; }
 
 .stat-box-link { cursor: pointer; transition: background 0.2s, transform 0.15s; }
 .stat-box-link:hover { background: #e8edf2; transform: scale(1.03); }

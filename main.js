@@ -5,6 +5,8 @@
     var _currentDetail = null;
     var _galleryActive = false;
     var _galleryScrollTop = 0;
+    var _textlistActive = false;
+    var _textlistScrollTop = 0;
 
     async function init() {
         try {
@@ -19,6 +21,7 @@
         try { Looseleaf.init(); } catch (e) { console.error('[INIT] Looseleaf.init 失败:', e); }
         try { ArticlePage.init(); } catch (e) { console.error('[INIT] ArticlePage.init 失败:', e); }
         try { GalleryPage.init(); } catch (e) { console.error('[INIT] GalleryPage.init 失败:', e); }
+        try { TextListPage.init(); } catch (e) { console.error('[INIT] TextListPage.init 失败:', e); }
         try { EditPage.updateStats(); } catch (e) { console.error('[INIT] updateStats 失败:', e); }
 
         // Tab 切换绑定用事件委托，绑在 document 上，保证一定生效（就算前面 init 崩了也能切页）
@@ -58,6 +61,8 @@
                 p.classList.remove('active');
             });
             document.getElementById('app-content').classList.remove('detail-mode');
+            _galleryActive = false;
+            _textlistActive = false;
         } catch(e) { console.warn('旧页面隐藏失败:', e); }
 
         try {
@@ -85,6 +90,10 @@
             var galleryScrollEl = document.querySelector('#page-gallery .gallery-scroll-wrap');
             if (galleryScrollEl) _galleryScrollTop = galleryScrollEl.scrollTop || 0;
             _detailBackStack.push({ kind: 'tab', page: '__gallery__' });
+        } else if (_textlistActive) {
+            var textlistScrollEl = document.querySelector('#page-textlist .textlist-scroll-wrap');
+            if (textlistScrollEl) _textlistScrollTop = textlistScrollEl.scrollTop || 0;
+            _detailBackStack.push({ kind: 'tab', page: '__textlist__' });
         } else {
             var fromPage = 'browse';
             var activeTab = document.querySelector('#app-tabs .app-tab.active');
@@ -137,6 +146,20 @@
                 setTimeout(function() { if (gScrollEl) gScrollEl.scrollTop = _galleryScrollTop; }, 50);
                 setTimeout(function() { if (gScrollEl) gScrollEl.scrollTop = _galleryScrollTop; }, 200);
                 setTimeout(function() { if (gScrollEl) gScrollEl.scrollTop = _galleryScrollTop; }, 500);
+            }
+            return;
+        }
+        if (pageName === '__textlist__') {
+            document.getElementById('page-textlist').classList.add('active');
+            var tScrollEl = document.querySelector('#page-textlist .textlist-scroll-wrap');
+            if (tScrollEl) {
+                tScrollEl.scrollTop = _textlistScrollTop;
+                requestAnimationFrame(function() {
+                    if (tScrollEl) tScrollEl.scrollTop = _textlistScrollTop;
+                });
+                setTimeout(function() { if (tScrollEl) tScrollEl.scrollTop = _textlistScrollTop; }, 50);
+                setTimeout(function() { if (tScrollEl) tScrollEl.scrollTop = _textlistScrollTop; }, 200);
+                setTimeout(function() { if (tScrollEl) tScrollEl.scrollTop = _textlistScrollTop; }, 500);
             }
             return;
         }
@@ -363,6 +386,19 @@
         hideGallery: function() {
             _galleryActive = false;
             document.getElementById('page-gallery').classList.remove('active');
+            switchPage('setting');
+        },
+        showTextList: function(type) {
+            _textlistActive = true;
+            _textlistScrollTop = 0;
+            document.querySelectorAll('.page').forEach(function(p) { p.classList.remove('active'); });
+            document.getElementById('app-content').classList.remove('detail-mode');
+            document.getElementById('page-textlist').classList.add('active');
+            TextListPage.show(type);
+        },
+        hideTextList: function() {
+            _textlistActive = false;
+            document.getElementById('page-textlist').classList.remove('active');
             switchPage('setting');
         },
         showDetail: showDetail,

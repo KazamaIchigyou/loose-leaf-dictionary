@@ -6,7 +6,7 @@
     <meta name="theme-color" content="#2c3e50">
     <link rel="manifest" href="manifest.json">
     <title>电子活页字典</title>
-    <link rel="stylesheet" href="styles/main.css?v=1.41.0">
+    <link rel="stylesheet" href="styles/main.css?v=1.42.0">
 </head>
 <body>
 <div id="app">
@@ -117,15 +117,30 @@ WN@字/字@描述#
             </div>
         </section>
 
+        <!-- 文本列表页 -->
+        <section class="page" id="page-textlist">
+            <div class="textlist-scroll-wrap">
+                <button class="back-btn" id="btn-textlist-back">&larr; 返回设置</button>
+                <div class="section-title" id="textlist-title">文本列表</div>
+                <div class="gallery-controls">
+                    <span class="gallery-controls-label">列数：</span>
+                    <button class="gallery-ctrl-btn" id="textlist-cols-minus">−</button>
+                    <span class="gallery-cols-num" id="textlist-cols-num">2</span>
+                    <button class="gallery-ctrl-btn" id="textlist-cols-plus">+</button>
+                </div>
+                <div class="textlist-list" id="textlist-list"></div>
+            </div>
+        </section>
+
         <!-- 设置页 -->
         <section class="page" id="page-setting">
             <div class="setting-card">
                 <div class="section-title">数据统计</div>
                 <div class="stats-grid" id="setting-stats">
-                    <div class="stat-box"><div class="stat-num" id="st-c">0</div><div class="stat-label">C单元</div></div>
-                    <div class="stat-box"><div class="stat-num" id="st-p">0</div><div class="stat-label">P复合</div></div>
-                    <div class="stat-box"><div class="stat-num" id="st-w">0</div><div class="stat-label">W单词</div></div>
-                    <div class="stat-box"><div class="stat-num" id="st-s">0</div><div class="stat-label">S句子</div></div>
+                    <div class="stat-box stat-box-link" id="stat-c-box"><div class="stat-num" id="st-c">0</div><div class="stat-label">C单元</div></div>
+                    <div class="stat-box stat-box-link" id="stat-p-box"><div class="stat-num" id="st-p">0</div><div class="stat-label">P复合</div></div>
+                    <div class="stat-box stat-box-link" id="stat-w-box"><div class="stat-num" id="st-w">0</div><div class="stat-label">W单词</div></div>
+                    <div class="stat-box stat-box-link" id="stat-s-box"><div class="stat-num" id="st-s">0</div><div class="stat-label">S句子</div></div>
                     <div class="stat-box stat-box-link" id="stat-img-box"><div class="stat-num" id="st-img">0</div><div class="stat-label">图片</div></div>
                 </div>
             </div>
@@ -176,25 +191,26 @@ WN@字/字@描述#
     </nav>
 </div>
 
-<script src="data-embed.js?v=1.41.0"></script>
-<script src="core/dict-store-browser.js?v=1.41.0"></script>
-<script src="core/command-parser.js?v=1.41.0"></script>
-<script src="core/validators.js?v=1.41.0"></script>
-<script src="core/operations.js?v=1.41.0"></script>
-<script src="core/queries.js?v=1.41.0"></script>
-<script src="core/updates.js?v=1.41.0"></script>
-<script src="core/export-import.js?v=1.41.0"></script>
-<script src="core/image-composer.js?v=1.41.0"></script>
-<script src="ui/edit-page.js?v=1.41.0"></script>
-<script src="ui/browse-page.js?v=1.41.0"></script>
-<script src="ui/drawing-board.js?v=1.41.0"></script>
-<script src="ui/looseleaf.js?v=1.41.0"></script>
-<script src="ui/article-page.js?v=1.41.0"></script>
-    <script src="ui/gallery-page.js?v=1.41.0"></script>
-    <script src="main.js?v=1.41.0"></script>
+<script src="data-embed.js?v=1.42.0"></script>
+<script src="core/dict-store-browser.js?v=1.42.0"></script>
+<script src="core/command-parser.js?v=1.42.0"></script>
+<script src="core/validators.js?v=1.42.0"></script>
+<script src="core/operations.js?v=1.42.0"></script>
+<script src="core/queries.js?v=1.42.0"></script>
+<script src="core/updates.js?v=1.42.0"></script>
+<script src="core/export-import.js?v=1.42.0"></script>
+<script src="core/image-composer.js?v=1.42.0"></script>
+<script src="ui/edit-page.js?v=1.42.0"></script>
+<script src="ui/browse-page.js?v=1.42.0"></script>
+<script src="ui/drawing-board.js?v=1.42.0"></script>
+<script src="ui/looseleaf.js?v=1.42.0"></script>
+<script src="ui/article-page.js?v=1.42.0"></script>
+    <script src="ui/gallery-page.js?v=1.42.0"></script>
+    <script src="ui/textlist-page.js?v=1.42.0"></script>
+    <script src="main.js?v=1.42.0"></script>
 <script>
 (function() {
-    var CUR_V = '1.41.0';
+    var CUR_V = '1.42.0';
     var KEY = 'dict_app_installed_version';
     try {
         var installed = localStorage.getItem(KEY);

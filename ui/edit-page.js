@@ -118,6 +118,31 @@
                 global.DictApp.showGallery();
             });
         }
+
+        var cBox = document.getElementById('stat-c-box');
+        if (cBox) {
+            cBox.addEventListener('click', function() {
+                global.DictApp.showTextList('c');
+            });
+        }
+        var pBox = document.getElementById('stat-p-box');
+        if (pBox) {
+            pBox.addEventListener('click', function() {
+                global.DictApp.showTextList('p');
+            });
+        }
+        var wBox = document.getElementById('stat-w-box');
+        if (wBox) {
+            wBox.addEventListener('click', function() {
+                global.DictApp.showTextList('w');
+            });
+        }
+        var sBox = document.getElementById('stat-s-box');
+        if (sBox) {
+            sBox.addEventListener('click', function() {
+                global.DictApp.showTextList('s');
+            });
+        }
     }
 
     document.addEventListener('click', function(e) {
