@@ -12,6 +12,7 @@
     var DB_NAME = 'dict_app_db';
     var DB_VERSION = 2;
     var LEGACY_KEY = 'dict_app_data';
+    var RESET_FLAG_KEY = 'dict_app_reset_done';
 
     var _data = null;
     var _db = null;
@@ -313,6 +314,16 @@
             var legacyData = _loadFromLegacy();
             if (legacyData) {
                 _data = _normalizeData(legacyData);
+                return _saveAllToDB().then(function() {
+                    _readyResolved = true;
+                });
+            }
+
+            var resetDone = false;
+            try { resetDone = localStorage.getItem(RESET_FLAG_KEY) === '1'; } catch (e) {}
+            if (resetDone) {
+                try { localStorage.removeItem(RESET_FLAG_KEY); } catch (e) {}
+                _data = _createEmptyData();
                 return _saveAllToDB().then(function() {
                     _readyResolved = true;
                 });
@@ -649,19 +660,32 @@
     }
 
     function reset() {
-        if (_db) {
-            try {
-                STORE_NAMES.forEach(function(name) {
+        return new Promise(function(resolve, reject) {
+            try { localStorage.removeItem(LEGACY_KEY); } catch (e) {}
+            try { localStorage.setItem(RESET_FLAG_KEY, '1'); } catch (e) {}
+            _data = null;
+            if (!_db) { resolve(); return; }
+            var pending = STORE_NAMES.length;
+            if (pending === 0) { resolve(); return; }
+            var failed = false;
+            STORE_NAMES.forEach(function(name) {
+                try {
                     var tx = _db.transaction(name, 'readwrite');
-                    tx.objectStore(name).clear();
-                });
-            } catch (e) {
-                console.error('清除 IndexedDB 失败:', e);
-            }
-        }
-        try { localStorage.removeItem(LEGACY_KEY); } catch (e) {}
-        _data = null;
-        _ensureData();
+                    var req = tx.objectStore(name).clear();
+                    req.onsuccess = function() {
+                        pending--;
+                        if (pending === 0 && !failed) { resolve(); }
+                    };
+                    req.onerror = function() {
+                        failed = true;
+                        reject(req.error);
+                    };
+                } catch (e) {
+                    failed = true;
+                    reject(e);
+                }
+            });
+        });
     }
 
     function exportData() {

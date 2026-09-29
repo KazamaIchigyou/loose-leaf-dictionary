@@ -99,8 +99,11 @@
             resetBtn.addEventListener('click', function() {
                 if (!confirm('⚠️ 确认清空所有数据？\n\n此操作将删除所有 C/P/W/S 条目及绘画图片，数据不可恢复。\n建议先导出备份。')) return;
                 if (!confirm('再次确认：真的要清空所有数据吗？')) return;
-                try { global.DictStore.reset(); } catch(e) { alert('清空失败: ' + (e.message || e)); return; }
-                location.reload();
+                global.DictStore.reset().then(function() {
+                    location.reload();
+                }).catch(function(e) {
+                    alert('清空失败: ' + (e.message || e));
+                });
             });
         }
 

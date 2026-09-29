@@ -413,41 +413,40 @@
                 throw new Error('ZIP 中未找到 data/index.json，不是有效的字典备份');
             }
 
-            var saveSteps = [];
-
-            if (mode === 'replace') {
-                DictStore.reset();
-            }
-
-            var idxPromise = DictStore.saveIndex(indexToSave);
-            saveSteps.push(idxPromise);
-
-            for (var w in wordsToSave) {
-                if (wordsToSave.hasOwnProperty(w)) {
-                    saveSteps.push(DictStore.saveWord(w, wordsToSave[w]));
+            function buildSaveSteps() {
+                var steps = [];
+                steps.push(DictStore.saveIndex(indexToSave));
+                for (var w in wordsToSave) {
+                    if (wordsToSave.hasOwnProperty(w)) {
+                        steps.push(DictStore.saveWord(w, wordsToSave[w]));
+                    }
                 }
-            }
-            for (var c in compoundsToSave) {
-                if (compoundsToSave.hasOwnProperty(c)) {
-                    saveSteps.push(DictStore.saveCompound(c, compoundsToSave[c]));
+                for (var c in compoundsToSave) {
+                    if (compoundsToSave.hasOwnProperty(c)) {
+                        steps.push(DictStore.saveCompound(c, compoundsToSave[c]));
+                    }
                 }
-            }
-            for (var s in sentencesToSave) {
-                if (sentencesToSave.hasOwnProperty(s)) {
-                    saveSteps.push(DictStore.saveSentence(s, sentencesToSave[s]));
+                for (var s in sentencesToSave) {
+                    if (sentencesToSave.hasOwnProperty(s)) {
+                        steps.push(DictStore.saveSentence(s, sentencesToSave[s]));
+                    }
                 }
-            }
-            for (var img in imagesToSave) {
-                if (imagesToSave.hasOwnProperty(img)) {
-                    saveSteps.push(DictStore.saveImage(img, imagesToSave[img]));
+                for (var img in imagesToSave) {
+                    if (imagesToSave.hasOwnProperty(img)) {
+                        steps.push(DictStore.saveImage(img, imagesToSave[img]));
+                    }
                 }
+                steps.push(Promise.resolve().then(function() {
+                    DictStore.rebuildImageIndex();
+                }));
+                return steps;
             }
 
-            saveSteps.push(Promise.resolve().then(function() {
-                DictStore.rebuildImageIndex();
-            }));
+            var resetStep = (mode === 'replace') ? DictStore.reset() : Promise.resolve();
 
-            return Promise.all(saveSteps).then(function() {
+            return resetStep.then(function() {
+                return Promise.all(buildSaveSteps());
+            }).then(function() {
                 return {
                     success: true,
                     mode: mode,

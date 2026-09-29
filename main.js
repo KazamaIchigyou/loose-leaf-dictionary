@@ -4,6 +4,7 @@
     var _detailBackStack = [];
     var _currentDetail = null;
     var _galleryActive = false;
+    var _galleryScrollTop = 0;
 
     async function init() {
         try {
@@ -81,6 +82,8 @@
         if (_currentDetail) {
             _detailBackStack.push({ kind: 'detail', type: _currentDetail.type, id: _currentDetail.id });
         } else if (_galleryActive) {
+            var galleryScrollEl = document.querySelector('#page-gallery .gallery-scroll-wrap');
+            if (galleryScrollEl) _galleryScrollTop = galleryScrollEl.scrollTop || 0;
             _detailBackStack.push({ kind: 'tab', page: '__gallery__' });
         } else {
             var fromPage = 'browse';
@@ -125,6 +128,16 @@
         document.getElementById('app-content').classList.remove('detail-mode');
         if (pageName === '__gallery__') {
             document.getElementById('page-gallery').classList.add('active');
+            var gScrollEl = document.querySelector('#page-gallery .gallery-scroll-wrap');
+            if (gScrollEl) {
+                gScrollEl.scrollTop = _galleryScrollTop;
+                requestAnimationFrame(function() {
+                    if (gScrollEl) gScrollEl.scrollTop = _galleryScrollTop;
+                });
+                setTimeout(function() { if (gScrollEl) gScrollEl.scrollTop = _galleryScrollTop; }, 50);
+                setTimeout(function() { if (gScrollEl) gScrollEl.scrollTop = _galleryScrollTop; }, 200);
+                setTimeout(function() { if (gScrollEl) gScrollEl.scrollTop = _galleryScrollTop; }, 500);
+            }
             return;
         }
         switchPage(pageName, true);
@@ -256,16 +269,18 @@
                 if (!imgIdx.hasOwnProperty(id)) continue;
                 var imgData = DictStore.loadImage(id);
                 if (!imgData) continue;
+                var ch = id.charAt(0).toLowerCase();
                 var type = 'c';
-                if (id.charAt(0) === 'p') type = 'p';
-                else if (id.charAt(0) === 'w') type = 'w';
-                else if (id.charAt(0) === 's') type = 's';
+                if (ch === 'p') type = 'p';
+                else if (ch === 'w') type = 'w';
+                else if (ch === 's') type = 's';
                 images.push({ id: id, type: type, imgData: imgData });
             }
             return images;
         },
         showGallery: function() {
             _galleryActive = true;
+            _galleryScrollTop = 0;
             document.querySelectorAll('.page').forEach(function(p) { p.classList.remove('active'); });
             document.getElementById('app-content').classList.remove('detail-mode');
             document.getElementById('page-gallery').classList.add('active');
