@@ -94,12 +94,30 @@
             importFile.addEventListener('change', onImport);
         }
 
+        var resetBtn = document.getElementById('btn-reset');
+        if (resetBtn) {
+            resetBtn.addEventListener('click', function() {
+                if (!confirm('⚠️ 确认清空所有数据？\n\n此操作将删除所有 C/P/W/S 条目及绘画图片，数据不可恢复。\n建议先导出备份。')) return;
+                if (!confirm('再次确认：真的要清空所有数据吗？')) return;
+                try { global.DictStore.reset(); } catch(e) { alert('清空失败: ' + (e.message || e)); return; }
+                location.reload();
+            });
+        }
+
         var checkBtn = document.getElementById('btn-check-update');
         if (checkBtn) {
             checkBtn.addEventListener('click', onCheckUpdate);
         }
 
-        document.addEventListener('click', function(e) {
+        var imgStatBox = document.getElementById('stat-img-box');
+        if (imgStatBox) {
+            imgStatBox.addEventListener('click', function() {
+                global.DictApp.showGallery();
+            });
+        }
+    }
+
+    document.addEventListener('click', function(e) {
             var applyBtn = e.target.closest('#btn-apply-update');
             if (applyBtn) {
                 var latest = applyBtn.dataset.version || '';
@@ -116,7 +134,6 @@
                 }
             }
         });
-    }
 
     function _getCurVersion() {
         var v = null;
@@ -345,10 +362,12 @@
         var stp = document.getElementById('st-p');
         var stw = document.getElementById('st-w');
         var sts = document.getElementById('st-s');
+        var stimg = document.getElementById('st-img');
         if (stc) stc.textContent = stats.c_count;
         if (stp) stp.textContent = stats.p_count;
         if (stw) stw.textContent = stats.w_count;
         if (sts) sts.textContent = stats.s_count;
+        if (stimg) stimg.textContent = stats.img_count;
         _refreshVersionDisplay();
     }
 

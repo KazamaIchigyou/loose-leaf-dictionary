@@ -204,6 +204,55 @@
         return { success: true, sid: sid, words: newWords, punct: newPunct };
     }
 
+    function checkDeleteC(cid) {
+        var index = DictStore.loadIndex();
+        var units = index.base_units || [];
+        var unit = null;
+        for (var i = 0; i < units.length; i++) {
+            if (units[i].cid === cid) { unit = units[i]; break; }
+        }
+        if (!unit) return { error: 'C单元 ' + cid + ' 不存在' };
+
+        var refPids = (index.c2p && index.c2p[cid]) || [];
+        var refWids = (index.unit_to_words && index.unit_to_words[cid]) || [];
+        var totalRefs = refPids.length + refWids.length;
+
+        if (totalRefs > 0) {
+            return {
+                can_delete: false,
+                ref_pids: refPids,
+                ref_wids: refWids,
+                message: 'C单元 ' + cid + '（' + (unit.text || '') + '）被 ' + totalRefs + ' 个上层单元引用'
+            };
+        }
+        return { can_delete: true, message: 'C单元 ' + cid + ' 未被引用' };
+    }
+
+    function deleteC(cid) {
+        var index = DictStore.loadIndex();
+        var units = index.base_units || [];
+        var unit = null;
+        for (var i = 0; i < units.length; i++) {
+            if (units[i].cid === cid) { unit = units[i]; break; }
+        }
+        if (!unit) return { error: 'C单元 ' + cid + ' 不存在' };
+
+        var refPids = (index.c2p && index.c2p[cid]) || [];
+        var refWids = (index.unit_to_words && index.unit_to_words[cid]) || [];
+        if (refPids.length > 0 || refWids.length > 0) {
+            return { error: 'C单元 ' + cid + ' 被上层引用，无法删除' };
+        }
+
+        index.base_units = units.filter(function(u) { return u.cid !== cid; });
+        if (index.c2p && index.c2p[cid]) delete index.c2p[cid];
+        if (index.unit_to_words && index.unit_to_words[cid]) delete index.unit_to_words[cid];
+
+        DictStore.saveIndex(index);
+        DictStore.deleteImage(cid);
+
+        return { success: true, cid: cid };
+    }
+
     function checkDeleteP(pid) {
         var index = DictStore.loadIndex();
         var compounds = index.compounds || [];
@@ -661,9 +710,11 @@
         updateWList: updateWList,
         confirmWListUpdate: confirmWListUpdate,
         updateSList: updateSList,
+        checkDeleteC: checkDeleteC,
         checkDeleteP: checkDeleteP,
         checkDeleteW: checkDeleteW,
         checkDeleteS: checkDeleteS,
+        deleteC: deleteC,
         deleteP: deleteP,
         deleteW: deleteW,
         deleteS: deleteS

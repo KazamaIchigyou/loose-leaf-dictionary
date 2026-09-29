@@ -119,6 +119,7 @@
         html += '<button class="btn btn-secondary btn-sm" id="btn-copy-command">复制录入代码</button>';
         if (type === 'c') {
             html += '<button class="btn btn-secondary btn-sm" id="btn-edit-text">修改字</button>';
+            html += '<button class="btn btn-danger btn-sm" id="btn-delete">删除</button>';
         } else if (type === 'p' || type === 'w' || type === 's') {
             html += '<button class="btn btn-secondary btn-sm" id="btn-edit-list">修改组成</button>';
             html += '<button class="btn btn-danger btn-sm" id="btn-delete">删除</button>';
@@ -317,7 +318,14 @@
         if (deleteBtn) {
             deleteBtn.addEventListener('click', function() {
                 var confirmMsg = '确定删除这个' + type.toUpperCase() + '单元吗？';
-                if (type === 'p') {
+                if (type === 'c') {
+                    var check = Updates.checkDeleteC(id);
+                    if (check.error) { alert(check.error); return; }
+                    if (!check.can_delete) {
+                        alert(check.message + '，无法删除。请先移除所有引用该C单元的上层P/W/S。');
+                        return;
+                    }
+                } else if (type === 'p') {
                     var check = Updates.checkDeleteP(id);
                     if (check.error) { alert(check.error); return; }
                     if (!check.can_delete) {
@@ -333,7 +341,8 @@
                 if (!confirm(confirmMsg)) return;
 
                 var result;
-                if (type === 'p') result = Updates.deleteP(id);
+                if (type === 'c') result = Updates.deleteC(id);
+                else if (type === 'p') result = Updates.deleteP(id);
                 else if (type === 'w') result = Updates.deleteW(id);
                 else if (type === 's') result = Updates.deleteS(id);
 

@@ -102,6 +102,19 @@ WN@字/字@描述#
             <div id="article-output" style="min-height:60px;"></div>
         </section>
 
+        <!-- 图片画廊页 -->
+        <section class="page" id="page-gallery">
+            <button class="back-btn" id="btn-gallery-back">&larr; 返回设置</button>
+            <div class="section-title" id="gallery-title">所有图片</div>
+            <div class="gallery-controls">
+                <span class="gallery-controls-label">密度：</span>
+                <button class="gallery-ctrl-btn" id="gallery-cols-minus">−</button>
+                <span class="gallery-cols-num" id="gallery-cols-num">4</span>
+                <button class="gallery-ctrl-btn" id="gallery-cols-plus">+</button>
+            </div>
+            <div class="gallery-grid" id="gallery-grid"></div>
+        </section>
+
         <!-- 设置页 -->
         <section class="page" id="page-setting">
             <div class="setting-card">
@@ -111,6 +124,7 @@ WN@字/字@描述#
                     <div class="stat-box"><div class="stat-num" id="st-p">0</div><div class="stat-label">P复合</div></div>
                     <div class="stat-box"><div class="stat-num" id="st-w">0</div><div class="stat-label">W单词</div></div>
                     <div class="stat-box"><div class="stat-num" id="st-s">0</div><div class="stat-label">S句子</div></div>
+                    <div class="stat-box stat-box-link" id="stat-img-box"><div class="stat-num" id="st-img">0</div><div class="stat-label">图片</div></div>
                 </div>
             </div>
             <div class="setting-card">
@@ -120,6 +134,10 @@ WN@字/字@描述#
                     <button class="btn btn-secondary" id="btn-export">导出备份</button>
                     <button class="btn btn-secondary" id="btn-import">导入恢复</button>
                     <input type="file" id="import-file" accept=".zip" style="display:none">
+                </div>
+                <div class="setting-desc" style="margin-top:12px;color:#c62828;">清空将删除所有 C/P/W/S 条目及绘画图片，数据不可恢复。建议先导出备份。</div>
+                <div class="toolbar">
+                    <button class="btn btn-danger" id="btn-reset">清空所有数据</button>
                 </div>
             </div>
             <div class="setting-card">
@@ -170,7 +188,8 @@ WN@字/字@描述#
 <script src="ui/drawing-board.js?v=1.40.0"></script>
 <script src="ui/looseleaf.js?v=1.40.0"></script>
 <script src="ui/article-page.js?v=1.40.0"></script>
-<script src="main.js?v=1.40.0"></script>
+    <script src="ui/gallery-page.js?v=1.40.0"></script>
+    <script src="main.js?v=1.40.0"></script>
 <script>
 (function() {
     var CUR_V = '1.40.0';

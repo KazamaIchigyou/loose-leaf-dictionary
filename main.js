@@ -3,6 +3,7 @@
 
     var _detailBackStack = [];
     var _currentDetail = null;
+    var _galleryActive = false;
 
     async function init() {
         try {
@@ -16,6 +17,7 @@
         try { BrowsePage.init(); } catch (e) { console.error('[INIT] BrowsePage.init 失败:', e); }
         try { Looseleaf.init(); } catch (e) { console.error('[INIT] Looseleaf.init 失败:', e); }
         try { ArticlePage.init(); } catch (e) { console.error('[INIT] ArticlePage.init 失败:', e); }
+        try { GalleryPage.init(); } catch (e) { console.error('[INIT] GalleryPage.init 失败:', e); }
         try { EditPage.updateStats(); } catch (e) { console.error('[INIT] updateStats 失败:', e); }
 
         // Tab 切换绑定用事件委托，绑在 document 上，保证一定生效（就算前面 init 崩了也能切页）
@@ -78,6 +80,8 @@
     function showDetail(type, id) {
         if (_currentDetail) {
             _detailBackStack.push({ kind: 'detail', type: _currentDetail.type, id: _currentDetail.id });
+        } else if (_galleryActive) {
+            _detailBackStack.push({ kind: 'tab', page: '__gallery__' });
         } else {
             var fromPage = 'browse';
             var activeTab = document.querySelector('#app-tabs .app-tab.active');
@@ -119,6 +123,10 @@
         _currentDetail = null;
         document.getElementById('page-detail').classList.remove('active');
         document.getElementById('app-content').classList.remove('detail-mode');
+        if (pageName === '__gallery__') {
+            document.getElementById('page-gallery').classList.add('active');
+            return;
+        }
         switchPage(pageName, true);
         if (pageName === 'browse') {
             BrowsePage.restoreScroll();
@@ -232,12 +240,41 @@
             var index = DictStore.loadIndex();
             var words = DictStore.loadAllWords();
             var sentences = DictStore.loadAllSentences();
+            var imgIdx = DictStore.getImageIndex();
             return {
                 c_count: (index.base_units || []).length,
                 p_count: (index.compounds || []).length,
                 w_count: Object.keys(words).length,
-                s_count: Object.keys(sentences).length
+                s_count: Object.keys(sentences).length,
+                img_count: Object.keys(imgIdx).length
             };
+        },
+        getAllImages: function() {
+            var imgIdx = DictStore.getImageIndex();
+            var images = [];
+            for (var id in imgIdx) {
+                if (!imgIdx.hasOwnProperty(id)) continue;
+                var imgData = DictStore.loadImage(id);
+                if (!imgData) continue;
+                var type = 'c';
+                if (id.charAt(0) === 'p') type = 'p';
+                else if (id.charAt(0) === 'w') type = 'w';
+                else if (id.charAt(0) === 's') type = 's';
+                images.push({ id: id, type: type, imgData: imgData });
+            }
+            return images;
+        },
+        showGallery: function() {
+            _galleryActive = true;
+            document.querySelectorAll('.page').forEach(function(p) { p.classList.remove('active'); });
+            document.getElementById('app-content').classList.remove('detail-mode');
+            document.getElementById('page-gallery').classList.add('active');
+            GalleryPage.show();
+        },
+        hideGallery: function() {
+            _galleryActive = false;
+            document.getElementById('page-gallery').classList.remove('active');
+            switchPage('setting');
         },
         showDetail: showDetail,
         hideDetail: hideDetail,
